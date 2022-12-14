@@ -1,0 +1,118 @@
+USE master;
+GO
+IF DB_ID (N'AgenciaAutos') IS NOT NULL
+DROP DATABASE AgenciaAutos
+GO
+CREATE DATABASE AgenciaAutos
+ON
+( NAME = AgenciaAutos_dat,
+    FILENAME = 'C:\BD\BD\Agencia de autos.mdf',
+    SIZE = 10,
+    MAXSIZE = 50,
+    FILEGROWTH = 5 )
+LOG ON
+( NAME = AgenciaAutos_log,
+    FILENAME = 'C:\BD\BD\Agencia de autos.ldf',
+    SIZE = 5MB,
+    MAXSIZE = 25MB,
+    FILEGROWTH = 5MB ) ;
+GO
+USE AgenciaAutos
+GO
+CREATE TABLE Cliente
+(
+	idCliente INT not null,
+	nombre VARCHAR (50) not null,
+	apellidoPaterno VARCHAR (50) not null,
+	apellidoMaterno VARCHAR (50) not null,
+	calle VARCHAR (50) not null,
+	numero VARCHAR (50) not null,
+	colonia VARCHAR (50) not null,
+	codigoPostal INT not null,
+	telefono INT not null,
+	estatus BIT DEFAULT 1 not null,
+);
+GO
+CREATE TABLE Reserva
+(
+	idReserva INT not null,
+	fechaInicial DATETIME not null,
+	fechaFinal DATETIME not null,
+	estatus BIT DEFAULT 1 not null,
+	idCliente INT not null,
+	idAgencia INT not null,
+);
+GO
+CREATE TABLE Coche
+(
+	idCoche INT not null,
+	estatus BIT DEFAULT 1 not null,
+	costo INT not null,
+	placa VARCHAR (50) not null,
+	idGaraje INT not null,
+);
+GO
+CREATE TABLE Garaje 
+(
+	idGaraje INT not null,
+	calle VARCHAR (50) not null,
+	numero INT not null,
+	colonia VARCHAR (50) not null,
+	codigoPostal INT not null,
+	estatus BIT DEFAULT 1 not null,
+);
+GO
+CREATE TABLE Agencia
+(
+	idAgencia INT not null,
+	nombre VARCHAR (50) not null,
+	telefono INT not null,
+	calle VARCHAR (50) not null,
+	colonia VARCHAR (50) not null,
+	codigoPostal INT not null,
+	estatus BIT DEFAULT 1 not null,
+);
+GO
+CREATE TABLE CocheReserva
+(
+	idCocheReserva INT not null,
+	idCoche INT not null,
+	idReserva INT not null,
+	estatus BIT DEFAULT 1 not null,
+);
+GO
+--Llaves Primarias
+ALTER TABLE Cliente ADD CONSTRAINT PK_Cliente PRIMARY KEY (idCliente)
+ALTER TABLE Reserva ADD CONSTRAINT PK_Reserva PRIMARY KEY (idReserva)
+ALTER TABLE Coche ADD CONSTRAINT PK_Coche PRIMARY KEY (idCoche)
+ALTER TABLE Garaje ADD CONSTRAINT PK_Garaje PRIMARY KEY (idGaraje)
+ALTER TABLE Agencia ADD CONSTRAINT PK_Agencia PRIMARY KEY (idAgencia)
+ALTER TABLE CocheReserva ADD CONSTRAINT PK_CocheReserva PRIMARY KEY (idCocheReserva)
+--Llaves Foraneas
+--Reserva
+ALTER TABLE Reserva ADD CONSTRAINT FK_ReservaCliente FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente)
+ALTER TABLE Reserva ADD CONSTRAINT FK_ReservaAgencia FOREIGN KEY (idAgencia) REFERENCES Agencia (idAgencia)
+--Coche
+ALTER TABLE Coche ADD CONSTRAINT FK_CocheGaraje FOREIGN KEY (idGaraje) REFERENCES Garaje (idGaraje)
+--CocheReserva
+ALTER TABLE CocheReserva ADD CONSTRAINT FK_CocheReservaCoche FOREIGN KEY (idCoche) REFERENCES Coche (idCoche)
+ALTER TABLE CocheReserva ADD CONSTRAINT FK_CocheReservaReserva FOREIGN KEY (idReserva) REFERENCES Reserva (idReserva)
+--INDICES
+CREATE INDEX IX_Cliente ON Cliente (idCliente)
+CREATE INDEX IX_Reserva ON Reserva (idReserva)
+CREATE INDEX IX_Coche ON Coche (idCoche)
+CREATE INDEX IX_Garaje ON Garaje (idGaraje)
+CREATE INDEX IX_Agencia ON Agencia (idAgencia)
+CREATE INDEX IX_CocheReserva ON CocheReserva (idCocheReserva)
+
+INSERT INTO Cliente(idCliente,nombre, apellidoPaterno, apellidoMaterno, calle, numero, colonia, codigoPostal, telefono) values(1,'Axel', 'Jimenez', 'Maltos','camelias','1451','las flores', 45545,1234567)
+go
+
+SELECT *FROM Cliente
+UPDATE Cliente SET nombre = 'Fernando' WHERE idCliente = 1
+GO
+SELECT *FROM Cliente
+DELETE FROM Cliente WHERE idCliente = 1
+GO
+SELECT *FROM Cliente
+

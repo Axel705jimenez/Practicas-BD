@@ -1,0 +1,124 @@
+--SQL
+USE master;
+GO
+IF DB_ID (N'LineaMetro') IS NOT NULL
+DROP DATABASE LineaMetro;
+GO
+CREATE DATABASE LineaMetro
+ON 
+(NAME = LineaMetro_dat,
+FILENAME = 'C:\BD\linea de metro.mdf',
+SIZE = 10,
+MAXSIZE = 50,
+FILEGROWTH = 5)
+LOG ON 
+(NAME = LineaMetro_log,
+FILENAME = 'C:\BD\linea de metro.ldf',
+SIZE = 5MB,
+MAXSIZE = 25MB,
+FILEGROWTH = 5MB);
+GO
+USE LineaMetro;
+GO
+
+--Tablas--
+
+CREATE TABLE COCHERA
+(
+idCochera int not null,
+nombre varchar(50) not null,
+calle varchar (50) not null,
+ciudad varchar(50) not null,
+numero int not null,
+estatus bit default 1 not null,
+);
+GO
+
+CREATE TABLE ACCESO
+(
+idAcceso int not null,
+nombre varchar(50) not null,
+calle varchar(50) not null,
+numero int not null,
+ciudad varchar(50) not null,
+idEstacion int not null,
+estatus bit default 1 not null,
+);
+GO
+
+
+CREATE TABLE ESTACION
+(
+idEstacion int not null,
+nombre varchar(50) not null,
+calle varchar (50) not null,
+numero int not null,
+ciudad varchar (50) not null,
+estatus bit default 1 not null,
+);
+GO
+
+CREATE TABLE LINEA
+(
+idLinea int not null,
+nombre varchar(50) not null,
+ruta varchar (50) not null,
+estatus bit default 1 not null,
+);
+GO
+
+CREATE TABLE TREN
+(
+idTren int not null,
+numero int not null,
+idLinea int not null,
+idCochera int not null,
+estatus bit default 1 not null,
+);
+GO
+
+CREATE TABLE LINEAESTACION
+(
+idLineaEstacion int not null,
+idLinea int not null,
+idEstacion int not null,
+estatus bit default 1 not null,
+);
+GO
+
+--Llaves primarias
+ALTER TABLE Cochera ADD CONSTRAINT PK_Cochera PRIMARY KEY (idCochera)
+ALTER TABLE Acceso ADD CONSTRAINT PK_Acceso PRIMARY KEY (idAcceso)
+ALTER TABLE Estacion ADD CONSTRAINT PK_Estacion PRIMARY KEY (idEstacion)
+ALTER TABLE Linea ADD CONSTRAINT PK_Linea PRIMARY KEY (idLinea)
+ALTER TABLE Tren ADD CONSTRAINT PK_Tren PRIMARY KEY (idTren)
+ALTER TABLE LineaEstacion ADD CONSTRAINT PK_LineaEstacion PRIMARY KEY (idLineaEstacion)
+
+--Llaves Foraneas
+--Acceso
+
+ALTER TABLE Acceso ADD CONSTRAINT FK_AccesoEstacion FOREIGN KEY (idEstacion) REFERENCES 
+Estacion(idEstacion)
+
+--Tren
+
+ALTER TABLE Tren ADD CONSTRAINT FK_TrenLinea FOREIGN KEY (idLinea) REFERENCES 
+Linea(idLinea)
+ALTER TABLE Tren ADD CONSTRAINT FK_TrenCochera FOREIGN KEY (idCochera) REFERENCES 
+Cochera(idCochera)
+
+--LineaEstacion
+
+ALTER TABLE LineaEstacion ADD CONSTRAINT FK_LineaEstacionLinea FOREIGN KEY (idLinea) REFERENCES 
+Linea(idLinea)
+ALTER TABLE LineaEstacion ADD CONSTRAINT FK_LineaEstacionEstacion FOREIGN KEY (idEstacion) REFERENCES 
+Estacion(idEstacion)
+
+--INDICES--
+
+CREATE INDEX IX_Acceso ON Acceso(idAcceso)
+CREATE INDEX IX_Estacion ON Estacion(idEstacion)
+CREATE INDEX IX_Linea ON Linea(idLinea)
+CREATE INDEX IX_Tren ON Tren(idTren)
+CREATE INDEX IX_LineaEstacion ON LineaEstacion(idLIneaEstacion)
+CREATE INDEX IX_Cochera ON COchera(idCochera)
